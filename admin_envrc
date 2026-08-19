@@ -1,5 +1,6 @@
 # To apply this configuration, run the following command from the root of the repository `yonc-router-admin`:
 # ln -sf ../yonc-tools/admin_envrc .envrc
+# direnv allow
 
 # Check whether the project's virtual environment has already been created.
 if [[ ! -d ".venv" ]]; then
@@ -27,3 +28,4 @@ if [[ -n "${_admin_pre_commit_hook}" ]]; then
 fi
 # Remove the temporary hook-path variable from the interactive shell environment.
 unset _admin_pre_commit_hook
+

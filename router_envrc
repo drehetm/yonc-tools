@@ -1,0 +1,35 @@
+# To apply this configuration, run the following commands from the root of the
+# `yonc-router` repository:
+# ln -sf ../yonc-tools/router_envrc .envrc
+# direnv allow
+
+# Reload the environment when the dependency definitions or bootstrap logic
+# change while the shell remains inside the repository.
+watch_file go.mod go.sum
+watch_file ../yonc-tools/router_envrc
+
+if ! command -v go >/dev/null 2>&1; then
+    log_error "Go is required to prepare the yonc-router development environment"
+    return 1
+fi
+
+# The go directive in go.mod selects a sufficiently new toolchain when Go's
+# standard automatic toolchain selection is available.
+export GOTOOLCHAIN=auto
+
+_router_module="$(go list -m -f '{{.Path}}' 2>/dev/null)"
+if [[ "${_router_module}" != "yonc-router" ]]; then
+    log_error "router_envrc must be loaded from the yonc-router repository root"
+    unset _router_module
+    return 1
+fi
+unset _router_module
+
+# Download missing modules and verify all cached module contents on every load.
+go mod download || return 1
+go mod verify || return 1
+
+# Keep CGO packages visible to gopls. Linking local binaries and tests still
+# requires the native libraries documented by their respective dependencies.
+export CGO_ENABLED=1
+
