@@ -3,7 +3,7 @@
 set -euo pipefail
 
 [[ $# == 2 && "$2" == <-> ]] || {
-    print -u2 "Usage: ${0:t} <router|admin|envoy> <pipeline ID>"
+    print -u2 "Usage: ${0:t} <router|admin|envoy|synthetic> <pipeline ID>"
     exit 2
 }
 : "${GITLAB_TOKEN:?Set GITLAB_TOKEN to a token with read_api scope}"
@@ -16,6 +16,7 @@ case "$project_name" in
     router) readonly project="yonc/backend/yonc-router" ;;
     admin) readonly project="yonc/backend/yonc-router-admin" ;;
     envoy) readonly project="yonc/backend/yonc-envoy" ;;
+    synthetic) readonly project="yonc/backend/yonc-synthetic" ;;
     *) print -u2 "Unknown project: $project_name"; exit 2 ;;
 esac
 
@@ -31,3 +32,4 @@ done
 
 print "GitLab $project_name pipeline $pipeline_id: $pipeline_status"
 printf '\e]9;GitLab %s pipeline %s: %s\a\n' "$project_name" "$pipeline_id" "$pipeline_status"
+
